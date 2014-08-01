@@ -1,0 +1,8 @@
+.git/
+.idea/
+node_modules/
+bowers/
+api/
+temp/
+.DS_Store
+*.log

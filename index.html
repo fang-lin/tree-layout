@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <script src="bowers/underscore/underscore.js"></script>
+    <script src="bowers/jquery/dist/jquery.js"></script>
+    <script src="app/traversers.js"></script>
+    <script src="app/main.js"></script>
+    <style>
+        #tree-canvas {
+            width: 640px;
+            height: 480px;
+        }
+
+        .node {
+            position: absolute;
+            display: block;
+            color: #ffffff;
+            background: #0b97c4;
+            -webkit-border-radius: 50%;
+            -moz-border-radius: 50%;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            text-align: center;
+            font: 10px/32px "Lucida Grande", "Lucida Sans Unicode", Helvetica, Arial, Verdana, sans-serif;
+            opacity: 0;
+            -webkit-transition: all 0.2s;
+            -moz-transition: all 0.2s;
+            -ms-transition: all 0.2s;
+            -o-transition: all 0.2s;
+            transition: all 0.2s;
+        }
+
+        .fade-in {
+            opacity: 1;
+        }
+
+        .current {
+            background: #000080;
+        }
+    </style>
+    <title>Tree Layout</title>
+</head>
+<body>
+<div id="tree-canvas"></div>
+</body>
+</html>
