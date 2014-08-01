@@ -5,12 +5,6 @@
 
 (function () {
 
-    function clone(tree) {
-        var newTree;
-
-
-    }
-
     function DFSPreOrder(tree) {
         var list = [];
 
@@ -98,11 +92,10 @@
         return paths;
     }
 
-    function dualMap(tree) {
+    function hashmap(tree) {
         var map = {};
 
-        (function traverse(subTree, parentId) {
-            subTree.parent = parentId;
+        (function traverse(subTree) {
             map[subTree.id] = subTree;
 
             if (subTree.children) {
@@ -110,18 +103,17 @@
                     traverse(tree, subTree.id);
                 });
             }
-        })(tree, null);
+        })(tree);
 
         return map;
     }
 
     window.Tree = {
-        clone: clone,
         DFSPreOrder: DFSPreOrder,
         DFSPostOrder: DFSPostOrder,
         BFS: BFS,
         BFSStratified: BFSStratified,
         paths: paths,
-        dualMap: dualMap
+        hashmap: hashmap
     }
 })();

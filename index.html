@@ -4,33 +4,31 @@
     <meta charset="UTF-8">
     <script src="bowers/underscore/underscore.js"></script>
     <script src="bowers/jquery/dist/jquery.js"></script>
+    <script src="app/createTree.js"></script>
     <script src="app/traversers.js"></script>
     <script src="app/main.js"></script>
     <style>
         #tree-canvas {
-            width: 640px;
-            height: 480px;
+            height: 240px;
+            position: relative;
         }
 
         .node {
             position: absolute;
             display: block;
-            color: #ffffff;
-            background: #0b97c4;
+            background: #666666;
             -webkit-border-radius: 50%;
             -moz-border-radius: 50%;
             border-radius: 50%;
             cursor: pointer;
-            width: 32px;
-            height: 32px;
-            text-align: center;
-            font: 10px/32px "Lucida Grande", "Lucida Sans Unicode", Helvetica, Arial, Verdana, sans-serif;
+            width: 4px;
+            height: 4px;
             opacity: 0;
-            -webkit-transition: all 0.2s;
-            -moz-transition: all 0.2s;
-            -ms-transition: all 0.2s;
-            -o-transition: all 0.2s;
-            transition: all 0.2s;
+            -webkit-transition: all .2s;
+            -moz-transition: all .2s;
+            -ms-transition: all .2s;
+            -o-transition: all .2s;
+            transition: all .2s;
         }
 
         .fade-in {
@@ -38,12 +36,21 @@
         }
 
         .current {
-            background: #000080;
+            background-color: orange;
+        }
+
+        #buttons button{
+            margin: 0;
+            padding: 0 5px;
+            font: 12px/18px "Lucida Grande", "Lucida Sans Unicode", Helvetica, Arial, Verdana, sans-serif;
         }
     </style>
     <title>Tree Layout</title>
 </head>
 <body>
 <div id="tree-canvas"></div>
+<div id="buttons">
+    <button id="refresh-tree">Refresh</button>
+</div>
 </body>
 </html>
