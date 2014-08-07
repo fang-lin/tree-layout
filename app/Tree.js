@@ -99,6 +99,31 @@
         },
         getTree: function (id) {
             return this.map[id];
+        },
+        layout: function (xSep, ySep) {
+            var tTree;
+            this.dfs(function (tree) {
+
+                if (tTree) {
+                    tree.x = tTree.x;
+
+                    if (tree.depth <= tTree.depth) {
+                        tree.x += xSep;
+                        var pTree = tree;
+                        while (pTree.parent) {
+                            pTree = pTree.parent;
+                            pTree.x += xSep * .5;
+                        }
+                    }
+                } else {
+                    tree.x = 0;
+                }
+
+                tree.y = tree.depth * ySep;
+                tTree = tree;
+            });
+
+            return this;
         }
     };
 

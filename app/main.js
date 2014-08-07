@@ -12,11 +12,10 @@ $(function () {
         nodeR = 4;
 
     var iTree = Tree
-        .init(treeDataCreator(5, 2, 2), function (oParent, oTree, dTree, index) {
-//            oTree.data = Math.random();
-        })
+        .init(treeDataCreator(5, 2, 2))
         .createMap()
-        .createBreadth();
+        .createBreadth()
+        .layout(xSep, ySep);
 
     var $tree = d3.select('#canvas')
             .append('g')
@@ -31,53 +30,49 @@ $(function () {
             .append('g')
             .attr('class', 'nodes');
 
-    (function () {
-        var tTree;
 
-        iTree.dfs(function (tree) {
-
-            if (tTree) {
-                tree.x = tTree.x;
-
-                if (tree.depth <= tTree.depth) {
-                    tree.x += xSep;
-                    var pTree = tree;
-                    while (pTree.parent) {
-                        pTree = pTree.parent;
-                        pTree.x += xSep * .5;
-                    }
-                }
-            } else {
-                tree.x = 0;
-            }
-
-            tree.y = tree.depth * ySep;
-            tTree = tree;
-        });
-    })();
-
-    iTree.dfs(function (tree) {
-
-        if (tree.parent) {
-            $edges
-                .append('line')
-                .attr('class', 'edge')
-                .attr('x1', tree.parent.x)
-                .attr('y1', tree.parent.y)
-                .attr('x2', tree.x)
-                .attr('y2', tree.y);
+    function toggleTree(oTree, tree) {
+        if (tree.children) {
+            tree._children = tree.children;
+            delete tree.children;
+        } else if (tree._children) {
+            tree.children = tree._children;
+            delete tree._children;
         }
+        oTree.layout(xSep, ySep);
+        render(oTree);
+    }
 
-        $nodes
-            .append('circle')
-            .attr('class', 'node')
-            .attr('r', nodeR)
-            .attr('cx', tree.x)
-            .attr('cy', tree.y)
-            .on('mouseover', function () {
-                console.log('id:', tree.id);
-            })
-    });
+    function render(oTree) {
+        $edges.html('');
+        $nodes.html('');
+
+        oTree.bfs(function (tree) {
+            if (tree.parent) {
+                $edges
+                    .append('line')
+                    .attr('class', 'edge')
+                    .attr('x1', tree.parent.x)
+                    .attr('y1', tree.parent.y)
+                    .attr('x2', tree.x)
+                    .attr('y2', tree.y);
+            }
+            $nodes
+                .append('circle')
+                .attr('class', 'node')
+                .attr('r', nodeR)
+                .attr('cx', tree.x)
+                .attr('cy', tree.y)
+                .on('mouseover', function () {
+                    console.log('id:', tree.id);
+                })
+                .on('click', function () {
+                    toggleTree(oTree, tree);
+                });
+        });
+    }
+
+    render(iTree);
 
 
     var timeB = new Date();
