@@ -10,9 +10,8 @@
     <!--<script src="app/traversers.js"></script>-->
     <script src="app/main.js"></script>
     <style>
-        #canvas {
+        #svg {
             height: 240px;
-            position: relative;
         }
 
         .node {
@@ -20,9 +19,23 @@
             cursor: pointer;
         }
 
+        .node text {
+            font: 12px/18px "Lucida Grande", "Lucida Sans Unicode", Helvetica, Arial, Verdana, sans-serif;
+        }
+
+        .node-hover {
+            stroke: #333;
+            stroke-width: 5;
+        }
+
         .edge {
-            stroke: #000;
+            stroke: #333;
             stroke-width: 1;
+            cursor: pointer;
+        }
+
+        .edge-hover {
+            stroke-width: 3;
         }
 
         .fade-in {
@@ -42,7 +55,7 @@
     <title>Tree Layout</title>
 </head>
 <body>
-<svg id="canvas"></svg>
+<svg id="svg"></svg>
 <div id="buttons">
     <button id="refresh-tree">Refresh</button>
 </div>

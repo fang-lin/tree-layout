@@ -5,33 +5,90 @@
 
 $(function () {
 
-    var timeA = new Date();
+    var stageSize = [640, 220],
+        gird = [30, 50],
+        nodeR = 4,
+        idPrefix = 'tree-';
 
-    var xSep = 10,
-        ySep = 20,
-        nodeR = 4;
-
-    var iTree = Tree
-        .init(treeDataCreator(5, 2, 2))
-        .createMap()
-        .createBreadth()
-        .layout(xSep, ySep);
-
-    var $tree = d3.select('#canvas')
+    var $svg = d3.select('#svg'),
+        $forest = $svg
             .append('g')
-            .attr('class', 'tree')
-            .attr('transform', 'translate(10,10)'),
+            .attr('class', 'forest')
+            .attr('transform', 'translate(30,10)');
 
-        $edges = $tree
+
+    var forest = [];
+
+    $.getJSON('data/trees.json', function (treesData) {
+        var timeA = new Date();
+
+//        var offset = treesData.reduce(function (offset, data, index) {
+//
+//            var nodesMap = {};
+//            data.nodes.forEach(function (node) {
+//                nodesMap[node.id] = node;
+//            });
+//
+//            var iTree = Tree
+//                .init(data.tree, function (oParent, oTree, dTree, index) {
+//                    oTree.node = nodesMap[dTree.id];
+//                })
+//                .createMap()
+//                .createBreadth();
+//
+        var $tree = $forest
             .append('g')
-            .attr('class', 'edges'),
+            .classed('tree', true);
+//            var treeSize = iTree.layout(gird[0], gird[1]);
+//
+//            offset += gird[0];
+//
+//            render(iTree, idPrefix, $tree, treeSize);
+//
+//            forest.push(iTree);
+//
+//            return offset + treeSize[0];
+//
+//        }, 0);
+//
+//        $svg.style('height', offset + 20);
 
-        $nodes = $tree
-            .append('g')
-            .attr('class', 'nodes');
+        console.log(forest);
+
+        var data = treesData[1];
+
+        var nodesMap = {};
+        data.nodes.forEach(function (node) {
+            nodesMap[node.id] = node;
+        });
+
+        var iTree = Tree
+            .init(data.tree, function (oParent, oTree, dTree, index) {
+                oTree.node = nodesMap[dTree.id];
+            })
+            .createMap()
+            .createBreadth();
+
+        forest.push(iTree);
+
+        iTree.scale(stageSize, iTree.layout(10, 20));
+
+        render(iTree, idPrefix, $tree);
+        var timeB = new Date();
+        console.log(timeB.getTime() - timeA.getTime());
+    });
 
 
-    function toggleTree(oTree, tree) {
+//    var iTree = Tree
+//        .init(treeDataCreator(10, 2, 2))
+////        .init(treeDataCreator(3, 1, 1))
+//        .createMap()
+//        .createBreadth();
+//
+//    iTree.scale(stageSize, iTree.layout(10, 20));
+
+
+    function toggleTree(oTree, tree, $wrap) {
         if (tree.children) {
             tree._children = tree.children;
             delete tree.children;
@@ -39,54 +96,90 @@ $(function () {
             tree.children = tree._children;
             delete tree._children;
         }
-        oTree.layout(xSep, ySep);
-        render(oTree);
+        oTree.layout(gird[0], gird[1]);
+        render(oTree, idPrefix, $wrap);
     }
 
-    function render(oTree) {
-        $edges.html('');
-        $nodes.html('');
+    function render(oTree, idPrefix, $wrap, treeSize) {
+
+//        var height = $wrap.attr('height');
+//
+//        var offset = 0;
+//
+//        d3.selectAll('g.tree').each(function (g, index, trees) {
+//            offset += d3.select(g).style('height');
+//            d3.select(g)
+//                .attr('transform', 'translate(' + offset + ',10)');
+//        });
+
+        $wrap.html('');
+
+        var $edges = $wrap
+                .append('g')
+                .classed('edges', true),
+
+            $nodes = $wrap
+                .append('g')
+                .classed('nodes', true);
 
         oTree.bfs(function (tree) {
             if (tree.parent) {
                 $edges
                     .append('line')
-                    .attr('class', 'edge')
+                    .classed('edge', true)
                     .attr('x1', tree.parent.x)
                     .attr('y1', tree.parent.y)
                     .attr('x2', tree.x)
-                    .attr('y2', tree.y);
+                    .attr('y2', tree.y)
+                    .on('mouseover', function () {
+                        d3.select(this).classed('edge-hover', true);
+                    })
+                    .on('mouseout', function () {
+                        d3.select(this).classed('edge-hover', false);
+                    });
             }
-            $nodes
+
+            var $node = $nodes
+                .append('g')
+                .classed('node', true)
+                .attr('transform', 'translate(' + tree.x + ',' + tree.y + ')');
+
+            $node
+                .append('text')
+                .attr('x', -6)
+                .attr('dy', 3)
+                .attr('text-anchor', 'end')
+                .html(tree.node.cat + (tree.node.isHead ? '*' : ''));
+
+            $node
                 .append('circle')
-                .attr('class', 'node')
-                .attr('id', 'tree-' + tree.id)
+                .attr('id', idPrefix + tree.id)
                 .attr('r', nodeR)
-                .attr('cx', tree.x)
-                .attr('cy', tree.y)
                 .on('mouseover', function () {
-                    console.log('id:', tree.id);
+                    d3.select(this).classed('node-hover', true);
+                })
+                .on('mouseout', function () {
+                    d3.select(this).classed('node-hover', false);
                 })
                 .on('click', function () {
-                    toggleTree(oTree, tree);
+                    toggleTree(oTree, tree, $wrap);
                 });
         });
     }
 
-    render(iTree);
+//    render(iTree, idPrefix);
 
-    iTree.bfs(function (tree) {
-        setTimeout(function () {
-            d3.select('#tree-' + tree.id).on('click')();
-        }, 1000 - 200 * tree.depth);
-    });
+//    iTree.bfs(function (tree) {
+//        setTimeout(function () {
+//            d3.select('#tree-' + tree.id).on('click')();
+//        }, 1000 - 200 * tree.depth);
+//    });
+//
+//    iTree.bfs(function (tree) {
+//        setTimeout(function () {
+//            d3.select('#tree-' + tree.id).on('click')();
+//        }, 1500 + 200 * tree.depth);
+//    });
 
-    iTree.bfs(function (tree) {
-        setTimeout(function () {
-            d3.select('#tree-' + tree.id).on('click')();
-        }, 1500 + 200 * tree.depth);
-    });
 
-    var timeB = new Date();
-    console.log(timeB.getTime() - timeA.getTime());
 });

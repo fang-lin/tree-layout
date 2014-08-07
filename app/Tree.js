@@ -100,27 +100,52 @@
         getTree: function (id) {
             return this.map[id];
         },
-        layout: function (xSep, ySep) {
-            var tTree;
-            this.dfs(function (tree) {
+        layout: function (girdX, girdY) {
+            var tTree,
+                rect = [0, 0],
+                gx = girdX || 1,
+                gy = girdY || 1;
 
+            this.dfs(function (tree) {
                 if (tTree) {
                     tree.x = tTree.x;
-
                     if (tree.depth <= tTree.depth) {
-                        tree.x += xSep;
+                        tree.x += gx;
                         var pTree = tree;
                         while (pTree.parent) {
                             pTree = pTree.parent;
-                            pTree.x += xSep * .5;
+                            pTree.x += gx * .5;
                         }
                     }
                 } else {
                     tree.x = 0;
                 }
 
-                tree.y = tree.depth * ySep;
+                tree.y = tree.depth * gy;
+
+                rect[0] < tree.x && (rect[0] = tree.x);
+                rect[1] < tree.y && (rect[1] = tree.y);
+
                 tTree = tree;
+            });
+
+            return rect;
+        },
+        scale: function (stageSize, treeSize) {
+            if (stageSize) {
+                var gx = stageSize[0] || 320,
+                    gy = stageSize[1] || 240;
+            }
+            if (treeSize) {
+                var tx = treeSize[0] || 0,
+                    ty = treeSize[1] || 0;
+            }
+            var scaleX = gx / tx,
+                scaleY = gy / ty;
+
+            this.dfs(function (tree) {
+                tree.x = scaleX == Infinity ? gx / 2 : tree.x * scaleX;
+                tree.y = scaleY == Infinity ? gy / 2 : tree.y * scaleY;
             });
 
             return this;
