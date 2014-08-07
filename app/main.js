@@ -60,6 +60,7 @@ $(function () {
             $nodes
                 .append('circle')
                 .attr('class', 'node')
+                .attr('id', 'tree-' + tree.id)
                 .attr('r', nodeR)
                 .attr('cx', tree.x)
                 .attr('cy', tree.y)
@@ -73,6 +74,18 @@ $(function () {
     }
 
     render(iTree);
+
+    iTree.bfs(function (tree) {
+        setTimeout(function () {
+            d3.select('#tree-' + tree.id).on('click')();
+        }, 1000 - 200 * tree.depth);
+    });
+
+    iTree.bfs(function (tree) {
+        setTimeout(function () {
+            d3.select('#tree-' + tree.id).on('click')();
+        }, 1500 + 200 * tree.depth);
+    });
 
     var timeB = new Date();
     console.log(timeB.getTime() - timeA.getTime());
