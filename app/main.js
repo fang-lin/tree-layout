@@ -5,25 +5,18 @@
 
 $(function () {
 
+    var timeA = new Date();
+
     var xSep = 10,
         ySep = 20,
         nodeR = 4;
 
-    var iTree = Tree.init(treeDataCreator(5, 2, 3), function (oParent, oTree, dTree, index) {
-        oTree.data = Math.random();
-    });
-    iTree
+    var iTree = Tree
+        .init(treeDataCreator(5, 2, 2), function (oParent, oTree, dTree, index) {
+//            oTree.data = Math.random();
+        })
         .createMap()
         .createBreadth();
-
-//    iTree.dfs(function (tree) {
-//        console.log(tree);
-//    });
-
-//    iTree.bfs(function (tree) {
-//        console.log(tree);
-//    });
-
 
     var $tree = d3.select('#canvas')
             .append('g')
@@ -38,28 +31,30 @@ $(function () {
             .append('g')
             .attr('class', 'nodes');
 
-    var tTree;
+    (function () {
+        var tTree;
 
-    iTree.dfs(function (tree) {
+        iTree.dfs(function (tree) {
 
-        if (tTree) {
-            tree.x = tTree.x;
+            if (tTree) {
+                tree.x = tTree.x;
 
-            if (tree.depth <= tTree.depth) {
-                tree.x += xSep;
-                var pTree = tree;
-                while (pTree.parent) {
-                    pTree = pTree.parent;
-                    pTree.x += xSep * .5;
+                if (tree.depth <= tTree.depth) {
+                    tree.x += xSep;
+                    var pTree = tree;
+                    while (pTree.parent) {
+                        pTree = pTree.parent;
+                        pTree.x += xSep * .5;
+                    }
                 }
+            } else {
+                tree.x = 0;
             }
-        } else {
-            tree.x = 0;
-        }
 
-        tree.y = tree.depth * ySep;
-        tTree = tree;
-    });
+            tree.y = tree.depth * ySep;
+            tTree = tree;
+        });
+    })();
 
     iTree.dfs(function (tree) {
 
@@ -80,7 +75,11 @@ $(function () {
             .attr('cx', tree.x)
             .attr('cy', tree.y)
             .on('mouseover', function () {
-                console.log(tree.id);
+                console.log('id:', tree.id);
             })
     });
+
+
+    var timeB = new Date();
+    console.log(timeB.getTime() - timeA.getTime());
 });
