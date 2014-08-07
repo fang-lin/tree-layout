@@ -74,7 +74,6 @@ $(function () {
 
     render(iTree);
 
-
     var timeB = new Date();
     console.log(timeB.getTime() - timeA.getTime());
 });
