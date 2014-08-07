@@ -60,11 +60,28 @@
 
     Tree.prototype = {
         constructor: Tree,
+
         dfs: function (prevFn, postFn) {
             iterator.dfs(this, prevFn, postFn);
         },
         bfs: function (fn) {
             iterator.bfs([this], fn);
+        },
+        createBreadth: function () {
+            var breadth = 0,
+                depth = 0;
+            this.bfs(function (tree) {
+                if (tree.parent) {
+                    if (tree.depth > depth) {
+                        depth = tree.depth;
+                        breadth = 0;
+                    } else {
+                        breadth++;
+                    }
+                }
+                tree.breadth = breadth;
+            });
+            return this;
         },
         createMap: function (fn) {
             var map = {};
@@ -73,15 +90,17 @@
                     fn(tree, map)
                 } else {
                     map[tree.id] = tree;
+                    tree.map = map;
                 }
             });
-            this.map = map;
-            return map;
+            return this;
+        },
+        getTree: function (id) {
+            return this.map[id];
         }
     };
 
     window.Tree = Tree;
-
 })();
 
 
