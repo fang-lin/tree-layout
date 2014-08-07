@@ -63,9 +63,11 @@
 
         dfs: function (prevFn, postFn) {
             iterator.dfs(this, prevFn, postFn);
+            return this;
         },
         bfs: function (fn) {
             iterator.bfs([this], fn);
+            return this;
         },
         createBreadth: function () {
             var breadth = 0,
