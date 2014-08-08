@@ -5,59 +5,81 @@
     <script src="bowers/underscore/underscore.js"></script>
     <script src="bowers/jquery/dist/jquery.js"></script>
     <script src="bowers/d3/d3.js"></script>
-    <script src="app/treeDataCreator.js"></script>
+    <script src="app/utility.js"></script>
+    <script src="app/Stage.js"></script>
     <script src="app/Tree.js"></script>
-    <!--<script src="app/traversers.js"></script>-->
     <script src="app/main.js"></script>
     <style>
-        #svg {
-            height: 240px;
+        html, body {
+            margin: 0;
+            padding: 20px;
+        }
+
+        #stage {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
         }
 
         .node {
-            fill: #333;
-            cursor: pointer;
+            fill: #666;
         }
 
-        .node text {
-            font: 12px/18px "Lucida Grande", "Lucida Sans Unicode", Helvetica, Arial, Verdana, sans-serif;
+        circle.parent {
+            fill: #f39;
         }
 
-        .node-hover {
-            stroke: #333;
-            stroke-width: 5;
+        line.parent {
+            stroke: #f39;
+            stroke-width: 2;
+        }
+
+        circle.toggle {
+            fill: #fff;
+            stroke: #666;
+            stroke-width: 1;
+        }
+
+        circle.self {
+            fill: #090;
+            stroke: #090;
+            stroke-width: 4;
+        }
+
+        circle.child {
+            fill: #39f;
+        }
+
+        line.child {
+            stroke: #39f;
+            stroke-width: 2;
         }
 
         .edge {
-            stroke: #333;
+            stroke: #666;
             stroke-width: 1;
             cursor: pointer;
         }
 
-        .edge-hover {
-            stroke-width: 3;
-        }
-
-        .fade-in {
-            opacity: 1;
-        }
-
-        .current {
-            background-color: orange;
-        }
-
-        #buttons button {
-            margin: 0;
-            padding: 0 5px;
-            font: 12px/18px "Lucida Grande", "Lucida Sans Unicode", Helvetica, Arial, Verdana, sans-serif;
+        #label {
+            list-style: none;
+            padding: 0;
+            font: 12px/14px Consolas, "Liberation Mono", Menlo, Courier, monospace;
         }
     </style>
     <title>Tree Layout</title>
 </head>
 <body>
-<svg id="svg"></svg>
-<div id="buttons">
-    <button id="refresh-tree">Refresh</button>
-</div>
+<div id="stage"></div>
+<ul id="label">
+    <li>id: <span id="label-id"></span></li>
+    <li>parentId: <span id="label-parentId"></span></li>
+    <li>index: <span id="label-index"></span></li>
+    <li>depth: <span id="label-depth"></span></li>
+    <li>breadth: <span id="label-breadth"></span></li>
+    <li>x: <span id="label-x"></span></li>
+    <li>y: <span id="label-y"></span></li>
+</ul>
 </body>
 </html>

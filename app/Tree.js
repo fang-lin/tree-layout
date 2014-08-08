@@ -9,7 +9,8 @@
         this.id = data.id;
     }
 
-    Tree.init = function (data, fn) {
+    Tree.factory = function (data, fn) {
+
         var oTree = new Tree(data);
         oTree.depth = 0;
 
@@ -39,21 +40,27 @@
     var iterator = Tree.iterator = {
         dfs: function (tree, prevFn, postFn) {
             prevFn && prevFn(tree);
+
             if (tree.children) {
                 tree.children.forEach(function (child) {
                     iterator.dfs(child, prevFn, postFn);
                 });
             }
+
             postFn && postFn(tree);
         },
+
         bfs: function (trees, fn) {
             var children = [];
+
             trees.forEach(function (tree) {
                 fn && fn(tree);
+
                 if (tree.children) {
                     children = children.concat(tree.children);
                 }
             });
+
             children.length && iterator.bfs(children, fn);
         }
     };
@@ -63,16 +70,44 @@
 
         dfs: function (prevFn, postFn) {
             iterator.dfs(this, prevFn, postFn);
+
             return this;
         },
+
         bfs: function (fn) {
             iterator.bfs([this], fn);
+
             return this;
         },
+
+        createList: function () {
+            var list = [];
+
+            this.dfs(function (tree) {
+                list.push(tree);
+                tree.list = list;
+            });
+
+            return this;
+        },
+
+        createMap: function (fn) {
+            var map = {};
+
+            this.list.forEach(function (tree) {
+                map[tree.id] = tree;
+                tree.map = map;
+            });
+
+            return this;
+        },
+
         createBreadth: function () {
+
             var breadth = 0,
                 depth = 0;
-            this.bfs(function (tree) {
+
+            this.list.forEach(function (tree) {
                 if (tree.parent) {
                     if (tree.depth > depth) {
                         depth = tree.depth;
@@ -83,30 +118,37 @@
                 }
                 tree.breadth = breadth;
             });
+
             return this;
         },
-        createMap: function (fn) {
-            var map = {};
-            this.dfs(function (tree) {
-                if (fn) {
-                    fn(tree, map)
-                } else {
-                    map[tree.id] = tree;
-                    tree.map = map;
-                }
-            });
-            return this;
-        },
+
         getTree: function (id) {
             return this.map[id];
         },
-        layout: function (girdX, girdY) {
+
+        toggle: function () {
+            if (this.children) {
+
+                this._children = this.children;
+                delete this.children;
+
+            } else if (this._children) {
+
+                this.children = this._children;
+                delete this._children;
+            }
+        },
+
+        layout: function (grid) {
+
+            this.createBreadth();
+
             var tTree,
                 rect = [0, 0],
-                gx = girdX || 1,
-                gy = girdY || 1;
+                gx = grid && grid[0] ? grid[0] : 1,
+                gy = grid && grid[1] ? grid[1] : 1;
 
-            this.dfs(function (tree) {
+            this.list.forEach(function (tree) {
                 if (tTree) {
                     tree.x = tTree.x;
                     if (tree.depth <= tTree.depth) {
@@ -131,21 +173,19 @@
 
             return rect;
         },
-        scale: function (stageSize, treeSize) {
-            if (stageSize) {
-                var gx = stageSize[0] || 320,
-                    gy = stageSize[1] || 240;
-            }
-            if (treeSize) {
-                var tx = treeSize[0] || 0,
-                    ty = treeSize[1] || 0;
-            }
-            var scaleX = gx / tx,
-                scaleY = gy / ty;
 
-            this.dfs(function (tree) {
-                tree.x = scaleX == Infinity ? gx / 2 : tree.x * scaleX;
-                tree.y = scaleY == Infinity ? gy / 2 : tree.y * scaleY;
+        scale: function (stageSize, treeSize) {
+
+            var gx = stageSize && stageSize[0] ? stageSize[0] : 320,
+                gy = stageSize && stageSize[1] ? stageSize[1] : 320,
+                tx = treeSize && treeSize[0] ? treeSize[0] : 0,
+                ty = treeSize && treeSize[1] ? treeSize[1] : 0;
+
+            var scale = [gx / tx, gy / ty];
+
+            this.list.forEach(function (tree) {
+                tree.x = scale[0] === Infinity ? gx / 2 : tree.x * scale[0];
+                tree.y = scale[1] === Infinity ? gy / 2 : tree.y * scale[1];
             });
 
             return this;
