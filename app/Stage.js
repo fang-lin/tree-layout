@@ -30,7 +30,7 @@
 
         draw: function () {
 
-            this.$forestLayer.html('');
+            this.$forestLayer.text('');
             var self = this,
                 size = this.forest.reduce(function (rect, tree) {
 
